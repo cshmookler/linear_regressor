@@ -1,0 +1,7 @@
+#pragma once
+
+namespace linreg {
+
+constexpr const char* compiletime_version = "@version@";
+
+} // namespace linreg
