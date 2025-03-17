@@ -47,13 +47,25 @@ res::result_t read_file(
 int main() {
     linreg::equation_t equation;
 
-    equation.push_back([](const std::vector<mpf_class>& input) {
+    equation.push_back([](const std::vector<mpf_class>& input) -> mpf_class {
+        return input[0] * input[0] * input[0];
+    });
+    equation.push_back([](const std::vector<mpf_class>& input) -> mpf_class {
+        return input[0] * input[0];
+    });
+    equation.push_back([](const std::vector<mpf_class>& input) -> mpf_class {
         return input[0];
     });
-    equation.push_back([](const std::vector<mpf_class>& input) {
+    equation.push_back([](const std::vector<mpf_class>& input) -> mpf_class {
+        return input[1] * input[1] * input[1];
+    });
+    equation.push_back([](const std::vector<mpf_class>& input) -> mpf_class {
+        return input[1] * input[1];
+    });
+    equation.push_back([](const std::vector<mpf_class>& input) -> mpf_class {
         return input[1];
     });
-    equation.push_back([](const std::vector<mpf_class>&) {
+    equation.push_back([](const std::vector<mpf_class>&) -> mpf_class {
         return 1;
     });
 
@@ -70,17 +82,28 @@ int main() {
           return res::success;
       });
     if (result.failure()) {
-        std::cout << result.error() << std::endl;
+        std::cerr << result.error() << std::endl;
         return 1;
     }
 
     auto solution = solution_maker.get_solution();
+    if (solution.has_error()) {
+        std::cerr << solution.error() << std::endl;
+        return 1;
+    }
 
-    std::cout << "w1 = " << solution.value()[0] << std::endl;
-    std::cout << "w2 = " << solution.value()[1] << std::endl;
-    std::cout << "b  = " << solution.value()[2] << std::endl;
+    std::cout << solution.value()[0] << "x^3 + ";
+    std::cout << solution.value()[1] << "x^2 + ";
+    std::cout << solution.value()[2] << "x + ";
+    std::cout << solution.value()[3] << "y^3 + ";
+    std::cout << solution.value()[4] << "y^2 + ";
+    std::cout << solution.value()[5] << "y + ";
+    std::cout << solution.value()[6] << std::endl;
 
     auto analyzer = solution_maker.get_analyzer(solution.value());
+    if (analyzer.has_error()) {
+        std::cerr << analyzer.error() << std::endl;
+    }
 
     result = read_file([&analyzer](const std::vector<linreg::num_t>& inputs,
                          const linreg::num_t& output) {
@@ -92,7 +115,7 @@ int main() {
         return res::success;
     });
     if (result.failure()) {
-        std::cout << result.error() << std::endl;
+        std::cerr << result.error() << std::endl;
         return 1;
     }
 

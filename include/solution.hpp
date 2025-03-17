@@ -108,10 +108,16 @@ class solution_maker_t {
     }
 
     res::optional_t<solution_t> get_solution() const {
-        solution_t solution(this->square_height_);
+        Eigen::FullPivLU<Eigen::Matrix<num_t, Eigen::Dynamic, Eigen::Dynamic>>
+          analyzed_coeff_matrix{ this->coeff_matrix_ };
+        if (! analyzed_coeff_matrix.isInvertible()) {
+            return RES_NEW_ERROR("The coefficient matrix is not invertible.");
+        }
 
         auto matrix_solution =
-          this->coeff_matrix_.inverse() * this->const_vector_;
+          analyzed_coeff_matrix.inverse() * this->const_vector_;
+
+        solution_t solution(this->square_height_);
 
         for (Eigen::Index i = 0; i < matrix_solution.size(); ++i) {
             solution[i] = matrix_solution(i, 0);
