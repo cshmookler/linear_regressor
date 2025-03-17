@@ -43,6 +43,7 @@ dep_gmpxx = dependency(
 
 examples = [
     'version',
+    'lab1',
 ]
 
 foreach example_name : examples
