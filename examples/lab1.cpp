@@ -1,5 +1,6 @@
+// This is the solution to an optimization problem given by a friend.
+
 // Standard includes
-#include <cpp_result/result.hpp>
 #include <string>
 #include <fstream>
 #include <functional>
@@ -7,12 +8,13 @@
 #include <iostream>
 
 // External includes
+#include <cpp_result/result.hpp>
 #include "../include/solution.hpp"
 
 res::result_t read_file(
   const std::function<res::result_t(const std::vector<linreg::num_t>& inputs,
     const linreg::num_t& output)>& function) {
-    std::ifstream file("correlated_data.csv");
+    std::ifstream file("lab1_data.csv");
     std::string row_str;
     std::getline(file, row_str); // Discard the first line
     while (std::getline(file, row_str)) {

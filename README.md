@@ -39,5 +39,5 @@ meson install
 
 - [X] Create a structure for representing a linear equation.
 - [X] Perform linear regression using the least squares method on any linear equation.
-- [ ] Write examples for using the linear regressor.
+- [X] Write examples for using the linear regressor.
 - [ ] Write tests for all methods.

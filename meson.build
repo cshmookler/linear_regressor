@@ -46,6 +46,10 @@ examples = [
     'lab1',
 ]
 
+# Copy the data for 'lab1' to the build directory
+fs = import('fs')
+fs.copyfile('examples' / 'lab1_data.csv', 'lab1_data.csv')
+
 foreach example_name : examples
     executable(
         'example_' + example_name,
