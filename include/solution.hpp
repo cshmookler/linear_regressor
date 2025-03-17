@@ -19,6 +19,48 @@ using term_t = num_t(const std::vector<num_t>&);
 using equation_t = std::vector<std::function<term_t>>;
 using solution_t = std::vector<num_t>;
 
+class solution_maker_t;
+
+class solution_analyzer_t {
+    equation_t equation_;
+    solution_t solution_;
+    num_t error_;
+
+    friend solution_maker_t;
+
+    solution_analyzer_t(const equation_t& equation, const solution_t& solution)
+    : equation_(equation), solution_(solution), error_(0) {
+    }
+
+  public:
+    res::result_t add_sample(
+      const std::vector<num_t>& inputs, const num_t& output) {
+        num_t solution_output = 0;
+
+        try {
+            for (size_t i = 0; i < this->equation_.size(); ++i) {
+                auto term_generator = this->equation_[i];
+                solution_output += this->solution_[i] * term_generator(inputs);
+            }
+        } catch (const std::exception& exception) {
+            return RES_NEW_ERROR(
+              "An exception occurred during term generation: "
+              + std::string{ exception.what() });
+        }
+
+        num_t diff = output - solution_output;
+        num_t square_diff = diff * diff;
+
+        this->error_ += square_diff;
+
+        return res::success;
+    }
+
+    num_t get_error() const {
+        return this->error_;
+    }
+};
+
 class solution_maker_t {
     equation_t equation_;
     Eigen::Index square_height_;
@@ -76,6 +118,18 @@ class solution_maker_t {
         }
 
         return solution;
+    }
+
+    res::optional_t<solution_analyzer_t> get_analyzer(
+      const solution_t& solution) const {
+        if (this->equation_.size() != solution.size()) {
+            return RES_NEW_ERROR("The solution size does not match the number "
+                                 "of terms in the equation.\n\tsolution size: "
+              + std::to_string(solution.size())
+              + "\n\tequation size: " + std::to_string(this->equation_.size()));
+        }
+
+        return solution_analyzer_t{ this->equation_, solution };
     }
 };
 
