@@ -101,25 +101,4 @@ int main() {
     std::cout << solution.value()[4] << "y^2 + ";
     std::cout << solution.value()[5] << "y + ";
     std::cout << solution.value()[6] << std::endl;
-
-    auto analyzer = solution_maker.get_analyzer(solution.value());
-    if (analyzer.has_error()) {
-        std::cerr << analyzer.error() << std::endl;
-    }
-
-    result = read_file([&analyzer](const std::vector<linreg::num_t>& inputs,
-                         const linreg::num_t& output) {
-        auto result = analyzer->add_sample(inputs, output);
-        if (result.failure()) {
-            result = RES_TRACE(result.error());
-            return result;
-        }
-        return res::success;
-    });
-    if (result.failure()) {
-        std::cerr << result.error() << std::endl;
-        return 1;
-    }
-
-    std::cout << "error: " << analyzer->get_error() << std::endl;
 }
